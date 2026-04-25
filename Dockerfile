@@ -3,15 +3,12 @@
 FROM runpod/worker-comfyui:5.7.1-base
 
 # --- custom nodes ----------------------------------------------------------
-# ControlAltAI is missing from ComfyRegistry, so install all three by git
-# (uniform handling, no registry surprises).
+# Only ControlAltAI is required (FluxResolutionNode). Missing from ComfyRegistry,
+# so install via git.
 RUN cd /comfyui/custom_nodes && \
-    git clone --depth=1 https://github.com/KGBicheno/ComfyUI_Image_Size_Tool && \
-    git clone --depth=1 https://github.com/WASasquatch/was-node-suite-comfyui && \
     git clone --depth=1 https://github.com/gseth/ControlAltAI-Nodes && \
-    for d in ComfyUI_Image_Size_Tool was-node-suite-comfyui ControlAltAI-Nodes; do \
-      [ -f "$d/requirements.txt" ] && pip install --no-cache-dir -r "$d/requirements.txt" || true; \
-    done
+    [ -f ControlAltAI-Nodes/requirements.txt ] && \
+      pip install --no-cache-dir -r ControlAltAI-Nodes/requirements.txt || true
 
 # --- models ----------------------------------------------------------------
 # diffusion model (~17GB) — mirror on dl.pqhaz.cc (origin: civitai)

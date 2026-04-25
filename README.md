@@ -16,9 +16,7 @@ docker build -t klein-snofs-comfyui .
 | kleinSnofsV13 (LoRA) | `models/loras/` | ~1GB |
 | qwen_3_8b_fp8mixed (text encoder) | `models/text_encoders/` | ~8.7GB |
 | flux2-vae | `models/vae/` | ~336MB |
-| ComfyUI_Image_Size_Tool | `custom_nodes/` | — |
-| was-node-suite-comfyui | `custom_nodes/` | — |
-| ControlAltAI-Nodes | `custom_nodes/` | — |
+| ControlAltAI-Nodes (FluxResolutionNode) | `custom_nodes/` | — |
 
 Final image: ~32GB on disk (excluding base layer).
 
