@@ -15,6 +15,11 @@ if [ -d /runpod-volume ]; then
   fi
 fi
 
+# Base image ships a SDXL/Flux1 test_input.json that fails on first start
+# because we don't have those checkpoints — RunPod then kills the worker.
+# Nuke it so the handler skips local self-test and waits for real jobs.
+rm -f /test_input.json
+
 declare -A MODELS=(
   ["diffusion_models/snofsSexNudesAndOtherFunStuff_v13Base.safetensors"]="${DIFFUSION_URL:-https://dl.pqhaz.cc/snofsSexNudesAndOtherFunStuff_v13Base.safetensors}"
   ["loras/kleinSnofsV13.safetensors"]="${LORA_URL:-https://dl.pqhaz.cc/loras/kleinSnofsV13.safetensors}"
