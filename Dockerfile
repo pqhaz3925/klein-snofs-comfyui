@@ -1,7 +1,7 @@
 # RunPod ComfyUI worker for FLUX.2 Klein 9B + snofs (sex/nudes v13).
 # All models baked in — built on netcup where the mirror at dl.pqhaz.cc is
 # local (full LAN speed downloads). Final image ~30GB.
-FROM runpod/worker-comfyui:5.7.1-base
+FROM runpod/worker-comfyui:5.8.5-base
 
 # --- custom nodes ----------------------------------------------------------
 # Only ControlAltAI is required (FluxResolutionNode). Missing from
