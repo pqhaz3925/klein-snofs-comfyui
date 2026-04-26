@@ -10,15 +10,17 @@ docker build -t klein-snofs-comfyui .
 
 ## Contents
 
-| asset | path inside image | size |
-|---|---|---|
-| snofsSexNudesAndOtherFunStuff_v13Base | `models/diffusion_models/` | ~17GB |
-| kleinSnofsV13 (LoRA) | `models/loras/` | ~1GB |
-| qwen_3_8b_fp8mixed (text encoder) | `models/text_encoders/` | ~8.7GB |
-| flux2-vae | `models/vae/` | ~336MB |
-| ControlAltAI-Nodes (FluxResolutionNode) | `custom_nodes/` | — |
+| asset | downloaded at runtime to | size | overridable env |
+|---|---|---|---|
+| snofsSexNudesAndOtherFunStuff_v13Base | `models/diffusion_models/` | ~17GB | `DIFFUSION_URL` |
+| kleinSnofsV13 (LoRA) | `models/loras/` | ~1GB | `LORA_URL` |
+| qwen_3_8b_fp8mixed (text encoder) | `models/text_encoders/` | ~8.7GB | `TEXT_ENCODER_URL` |
+| flux2-vae | `models/vae/` | ~336MB | `VAE_URL` |
+| ControlAltAI-Nodes (FluxResolutionNode) | `custom_nodes/` (baked in) | — | — |
 
-Final image: ~32GB on disk (excluding base layer).
+Image itself is ~3GB (base + custom nodes). Models stream on container start
+via `setup-models.sh`. If `/comfyui/models` is on a persistent volume, the
+download happens once.
 
 ## CI / image hosting
 
