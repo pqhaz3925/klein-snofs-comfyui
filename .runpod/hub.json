@@ -7,7 +7,7 @@
   "config": {
     "runsOn": "GPU",
     "containerDiskInGb": 50,
-    "gpuIds": "ADA_48_PRO,AMPERE_80,ADA_80_PRO,ADA_96_PRO",
+    "gpuIds": "AMPERE_48,ADA_48_PRO,AMPERE_80,BLACKWELL_96,HOPPER_141",
     "env": []
   }
 }
