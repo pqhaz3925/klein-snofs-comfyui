@@ -4,23 +4,30 @@ RunPod ComfyUI worker image for FLUX.2 Klein 9B with snofs v13 LoRA / base.
 
 ## Build
 
+Built on netcup (where the `dl.pqhaz.cc` mirror lives — downloads are loopback,
+~5 min total). GH Actions runners don't have enough disk for the ~30GB image.
+
 ```bash
-docker build -t klein-snofs-comfyui .
+ssh netcup
+git clone https://github.com/pqhaz3925/klein-snofs-comfyui /tmp/build
+cd /tmp/build
+docker build -t ghcr.io/pqhaz3925/klein-snofs-comfyui:latest .
+echo "$GHCR_PAT" | docker login ghcr.io -u pqhaz3925 --password-stdin
+docker push ghcr.io/pqhaz3925/klein-snofs-comfyui:latest
 ```
 
 ## Contents
 
-| asset | downloaded at runtime to | size | overridable env |
-|---|---|---|---|
-| snofsSexNudesAndOtherFunStuff_v13Base | `models/diffusion_models/` | ~17GB | `DIFFUSION_URL` |
-| kleinSnofsV13 (LoRA) | `models/loras/` | ~1GB | `LORA_URL` |
-| qwen_3_8b_fp8mixed (text encoder) | `models/text_encoders/` | ~8.7GB | `TEXT_ENCODER_URL` |
-| flux2-vae | `models/vae/` | ~336MB | `VAE_URL` |
-| ControlAltAI-Nodes (FluxResolutionNode) | `custom_nodes/` (baked in) | — | — |
+| asset | path inside image | size |
+|---|---|---|
+| snofsSexNudesAndOtherFunStuff_v13Base | `models/diffusion_models/` | ~17GB |
+| kleinSnofsV13 (LoRA) | `models/loras/` | ~1GB |
+| qwen_3_8b_fp8mixed (text encoder) | `models/text_encoders/` | ~8.7GB |
+| flux2-vae | `models/vae/` | ~336MB |
+| ControlAltAI-Nodes (FluxResolutionNode) | `custom_nodes/` | — |
 
-Image itself is ~3GB (base + custom nodes). Models stream on container start
-via `setup-models.sh`. If `/comfyui/models` is on a persistent volume, the
-download happens once.
+Final image: ~30GB. Cold start on RunPod serverless = image pull only
+(no model downloads), so latency is bounded by network.
 
 ## CI / image hosting
 

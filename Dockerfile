@@ -1,6 +1,6 @@
 # RunPod ComfyUI worker for FLUX.2 Klein 9B + snofs (sex/nudes v13).
-# Models are NOT baked into the image — they download on first container start
-# (and persist if /comfyui/models is on a RunPod volume).
+# All models baked in — built on netcup where the mirror at dl.pqhaz.cc is
+# local (full LAN speed downloads). Final image ~30GB.
 FROM runpod/worker-comfyui:5.7.1-base
 
 # --- custom nodes ----------------------------------------------------------
@@ -11,11 +11,23 @@ RUN cd /comfyui/custom_nodes && \
     [ -f ControlAltAI-Nodes/requirements.txt ] && \
       pip install --no-cache-dir -r ControlAltAI-Nodes/requirements.txt || true
 
-# --- model bootstrap on container start ------------------------------------
-# Downloads on first run, skips if files already exist (volume-aware).
-# Override URLs via env vars: DIFFUSION_URL, LORA_URL, TEXT_ENCODER_URL, VAE_URL.
-COPY setup-models.sh /usr/local/bin/setup-models.sh
-RUN chmod +x /usr/local/bin/setup-models.sh
-
-ENTRYPOINT ["/usr/local/bin/setup-models.sh"]
-# CMD inherited from base image (["/start.sh"]).
+# --- models ----------------------------------------------------------------
+# Single RUN = single layer. URLs hit dl.pqhaz.cc which is the same host
+# during build, so transfer is loopback. HF assets fetched normally.
+RUN set -e && \
+    comfy model download \
+      --url https://dl.pqhaz.cc/snofsSexNudesAndOtherFunStuff_v13Base.safetensors \
+      --relative-path models/diffusion_models \
+      --filename snofsSexNudesAndOtherFunStuff_v13Base.safetensors && \
+    comfy model download \
+      --url https://dl.pqhaz.cc/loras/kleinSnofsV13.safetensors \
+      --relative-path models/loras \
+      --filename kleinSnofsV13.safetensors && \
+    comfy model download \
+      --url https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors \
+      --relative-path models/text_encoders \
+      --filename qwen_3_8b_fp8mixed.safetensors && \
+    comfy model download \
+      --url https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors \
+      --relative-path models/vae \
+      --filename flux2-vae.safetensors
