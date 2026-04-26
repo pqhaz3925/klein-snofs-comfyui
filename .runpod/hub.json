@@ -1,0 +1,13 @@
+{
+  "title": "klein-snofs",
+  "description": "FLUX.2 Klein 9B + snofs v13 (sex/nudes) baked image. ComfyUI worker with diffusion model + LoRA + qwen3-8b text encoder + flux2 VAE + ControlAltAI nodes.",
+  "type": "serverless",
+  "category": "image",
+  "iconUrl": "https://cdn.prod.website-files.com/67d20fb9f56ff2ec6a7a657d/685b40411e38197aff6351df_poddy-3.webp",
+  "config": {
+    "runsOn": "GPU",
+    "containerDiskInGb": 50,
+    "gpuIds": "ADA_48_PRO,AMPERE_80,ADA_80_PRO,ADA_96_PRO",
+    "env": []
+  }
+}
