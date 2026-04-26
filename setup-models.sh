@@ -1,10 +1,19 @@
 #!/bin/bash
-# Downloads models into /comfyui/models on first start. If a network volume
-# is mounted at /comfyui/models, files persist across cold starts (instant
-# mount on subsequent runs).
+# Symlinks /comfyui/models → /runpod-volume/models (network volume mount on
+# serverless), then downloads any missing model files.
 set -euo pipefail
 
-MODELS_DIR=/comfyui/models
+VOLUME_MODELS=/runpod-volume/models
+COMFY_MODELS=/comfyui/models
+
+# If volume is mounted, point ComfyUI's models dir at it.
+if [ -d /runpod-volume ]; then
+  mkdir -p "$VOLUME_MODELS"
+  if [ ! -L "$COMFY_MODELS" ]; then
+    rm -rf "$COMFY_MODELS"
+    ln -s "$VOLUME_MODELS" "$COMFY_MODELS"
+  fi
+fi
 
 declare -A MODELS=(
   ["diffusion_models/snofsSexNudesAndOtherFunStuff_v13Base.safetensors"]="${DIFFUSION_URL:-https://dl.pqhaz.cc/snofsSexNudesAndOtherFunStuff_v13Base.safetensors}"
@@ -14,7 +23,7 @@ declare -A MODELS=(
 )
 
 for rel in "${!MODELS[@]}"; do
-  full="$MODELS_DIR/$rel"
+  full="$COMFY_MODELS/$rel"
   url="${MODELS[$rel]}"
   if [ -f "$full" ]; then
     echo "[setup-models] present: $rel"
