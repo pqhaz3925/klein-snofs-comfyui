@@ -1,19 +1,18 @@
-# RunPod ComfyUI worker for FLUX.2 Klein 9B + snofs (sex/nudes v13).
-# Slim image (~3GB). Models live on a RunPod network volume mounted at
-# /comfyui/models — populated by setup-models.sh on first start.
+# clean base image containing only comfyui, comfy-cli and comfyui-manager
 FROM runpod/worker-comfyui:5.8.5-base
 
-# Custom node: ControlAltAI (FluxResolutionNode). Missing from ComfyRegistry,
-# so install via git.
-RUN cd /comfyui/custom_nodes && \
-    git clone --depth=1 https://github.com/gseth/ControlAltAI-Nodes && \
-    [ -f ControlAltAI-Nodes/requirements.txt ] && \
-      pip install --no-cache-dir -r ControlAltAI-Nodes/requirements.txt || true
+# install custom nodes into comfyui
+RUN comfy-node-install controlaltai-nodes
 
-# Model bootstrap. Downloads to /comfyui/models if missing (idempotent —
-# skips on warm starts when volume already populated).
-COPY setup-models.sh /usr/local/bin/setup-models.sh
-RUN chmod +x /usr/local/bin/setup-models.sh
+# download models into comfyui
+# Diffusion model (FLUX.2 Klein 9B + snofs v13 base)
+RUN comfy model download --url https://dl.pqhaz.cc/snofsSexNudesAndOtherFunStuff_v13Base.safetensors --relative-path models/diffusion_models --filename snofsSexNudesAndOtherFunStuff_v13Base.safetensors
 
-ENTRYPOINT ["/usr/local/bin/setup-models.sh"]
-# CMD inherited from base image (["/start.sh"]).
+# LoRA
+RUN comfy model download --url https://dl.pqhaz.cc/loras/kleinSnofsV13.safetensors --relative-path models/loras --filename kleinSnofsV13.safetensors
+
+# CLIP text encoder
+RUN comfy model download --url https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-9b/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors --relative-path models/text_encoders --filename qwen_3_8b_fp8mixed.safetensors
+
+# VAE
+RUN comfy model download --url https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors --relative-path models/vae --filename flux2-vae.safetensors
