@@ -5,7 +5,7 @@ FROM runpod/worker-comfyui:5.8.5-base
 RUN comfy-node-install controlaltai-nodes
 
 # download models into comfyui
-# Diffusion model (FLUX.2 Klein 9B + snofs v13 base)
+# Diffusion model
 RUN comfy model download --url https://dl.pqhaz.cc/snofsSexNudesAndOtherFunStuff_v13Base.safetensors --relative-path models/diffusion_models --filename snofsSexNudesAndOtherFunStuff_v13Base.safetensors
 
 # LoRA
